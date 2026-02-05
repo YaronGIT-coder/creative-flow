@@ -561,6 +561,114 @@
             margin: 0 4px;
         }
 
+        /* Custom Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-medium);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 32px;
+            white-space: pre-line;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-medium);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
         /* Category Buttons Grid */
         .category-grid {
             display: grid;
@@ -597,7 +705,12 @@
     <div class="header">
         <div class="header-inner">
             <div class="logo">CREATIVE FLOW</div>
-            <div class="version-badge">v1.3 BETA</div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button onclick="showSolution('reference')" style="background: none; border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    🎵 Ref Analyzer
+                </button>
+                <div class="version-badge">v1.3 BETA</div>
+            </div>
         </div>
     </div>
 
@@ -673,6 +786,12 @@
                     <h3 class="problem-title">Too Many Elements</h3>
                     <p class="problem-desc">Track is muddy, need help removing layers</p>
                 </div>
+
+                <div class="problem-card" onclick="showSolution('reference')">
+                    <span class="problem-icon">🎵</span>
+                    <h3 class="problem-title">Analyze a Reference Track</h3>
+                    <p class="problem-desc">I want to match a specific track's vibe and structure</p>
+                </div>
             </div>
         </div>
 
@@ -720,36 +839,59 @@
                 </div>
 
                 <div class="card">
-                    <h3 class="card-title">Step 3: Or Use a Reference Track</h3>
+                    <h3 class="card-title">Step 3: Analyze a Reference Track</h3>
                     <p style="margin-bottom: 16px; color: var(--text-secondary);">
-                        Have a track you want to sound like? Enter details below:
+                        Have a track you want to sound like? Tell us about it:
                     </p>
                     <div class="input-grid">
                         <div>
-                            <label>Reference BPM</label>
-                            <input type="number" id="ref-bpm" placeholder="124" min="80" max="180">
+                            <label>BPM</label>
+                            <input type="number" id="ref-bpm-blank" placeholder="124" min="80" max="180">
                         </div>
                         <div>
-                            <label>Reference Key</label>
-                            <select id="ref-key">
+                            <label>Key</label>
+                            <select id="ref-key-blank">
                                 <option value="">Unknown</option>
-                                <option>C</option>
-                                <option>C#/Db</option>
-                                <option>D</option>
-                                <option>D#/Eb</option>
-                                <option>E</option>
-                                <option>F</option>
-                                <option>F#/Gb</option>
-                                <option>G</option>
-                                <option>G#/Ab</option>
-                                <option>A</option>
-                                <option>A#/Bb</option>
-                                <option>B</option>
+                                <option>C Minor</option>
+                                <option>C# Minor</option>
+                                <option>D Minor</option>
+                                <option>D# Minor</option>
+                                <option>E Minor</option>
+                                <option>F Minor</option>
+                                <option>F# Minor</option>
+                                <option>G Minor</option>
+                                <option>G# Minor</option>
+                                <option>A Minor</option>
+                                <option>A# Minor</option>
+                                <option>B Minor</option>
+                                <option>C Major</option>
+                                <option>D Major</option>
+                                <option>E Major</option>
+                                <option>F Major</option>
+                                <option>G Major</option>
+                                <option>A Major</option>
+                                <option>B Major</option>
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="analyzeReference()">Analyze Reference</button>
-                    <div id="reference-output"></div>
+                    <div class="input-grid">
+                        <div>
+                            <label>Track Length (minutes)</label>
+                            <input type="number" id="ref-length" placeholder="6.5" step="0.5" min="3" max="12">
+                        </div>
+                        <div>
+                            <label>Vibe</label>
+                            <select id="ref-vibe">
+                                <option>Dark & Hypnotic</option>
+                                <option>Groovy & Funky</option>
+                                <option>Energetic & Peak-Time</option>
+                                <option>Dreamy & Atmospheric</option>
+                                <option>Minimal & Tech</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeReferenceDeep()">🔍 Analyze Reference Track</button>
+                    <div id="reference-output-blank"></div>
                 </div>
             </div>
         </div>
@@ -1041,6 +1183,172 @@
             </div>
         </div>
 
+        <!-- Reference Analyzer Solution -->
+        <div id="solution-reference" class="solution-page">
+            <div class="back-btn" onclick="showLanding()">← Back to Problems</div>
+            
+            <div class="solution-header">
+                <h2 class="solution-title">Reference Track <span class="hero-gradient">Analyzer</span></h2>
+                <p class="solution-subtitle">Understand what makes your favorite tracks work, then apply it to yours</p>
+            </div>
+
+            <!-- Manual Analysis Section -->
+            <div class="card">
+                <h3 class="card-title">Reference Track Details</h3>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+                    Enter what you know about the track you want to reference:
+                </p>
+                
+                <div class="input-grid">
+                    <div>
+                        <label>BPM *</label>
+                        <input type="number" id="ref-analyzer-bpm" placeholder="124" min="80" max="180">
+                    </div>
+                    <div>
+                        <label>Track Length (minutes) *</label>
+                        <input type="number" id="ref-analyzer-length" placeholder="6.5" step="0.5" min="2" max="15">
+                    </div>
+                </div>
+
+                <div class="input-grid">
+                    <div>
+                        <label>Key</label>
+                        <select id="ref-analyzer-key">
+                            <option value="">Unknown</option>
+                            <option>C Minor</option>
+                            <option>C# Minor</option>
+                            <option>D Minor</option>
+                            <option>E Minor</option>
+                            <option>F Minor</option>
+                            <option>F# Minor</option>
+                            <option>G Minor</option>
+                            <option selected>G# Minor</option>
+                            <option>A Minor</option>
+                            <option>B Minor</option>
+                            <option>C Major</option>
+                            <option>D Major</option>
+                            <option>E Major</option>
+                            <option>F Major</option>
+                            <option>G Major</option>
+                            <option>A Major</option>
+                            <option>B Major</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Overall Vibe</label>
+                        <select id="ref-analyzer-vibe">
+                            <option>Dark & Hypnotic</option>
+                            <option>Groovy & Funky</option>
+                            <option>Energetic & Peak-Time</option>
+                            <option>Dreamy & Atmospheric</option>
+                            <option>Minimal & Tech</option>
+                            <option>Vocal & Melodic</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label>How many layers/elements? (Optional)</label>
+                    <div class="input-grid">
+                        <div>
+                            <input type="number" id="ref-drums" placeholder="Drums (0-10)" min="0" max="20">
+                        </div>
+                        <div>
+                            <input type="number" id="ref-bass" placeholder="Bass (0-5)" min="0" max="10">
+                        </div>
+                    </div>
+                    <div class="input-grid">
+                        <div>
+                            <input type="number" id="ref-melodic" placeholder="Melodic (0-10)" min="0" max="20">
+                        </div>
+                        <div>
+                            <input type="number" id="ref-fx" placeholder="FX/Atmos (0-10)" min="0" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="analyzeReferenceFull()">🔍 Analyze Reference Track</button>
+            </div>
+
+            <div id="ref-analysis-output"></div>
+
+            <div id="ref-comparison-section" style="display: none;">
+                <div class="card">
+                    <h3 class="card-title">Compare to YOUR Track</h3>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+                        Now tell us about YOUR track to see the gap:
+                    </p>
+                    
+                    <div class="input-grid">
+                        <div>
+                            <label>Your BPM</label>
+                            <input type="number" id="your-bpm" placeholder="124">
+                        </div>
+                        <div>
+                            <label>Your Key</label>
+                            <select id="your-key">
+                                <option value="">Unknown</option>
+                                <option>G# Minor</option>
+                                <option>A Minor</option>
+                                <option>C Minor</option>
+                                <option>D Minor</option>
+                                <option>E Minor</option>
+                                <option>F Minor</option>
+                                <option>C Major</option>
+                                <option>D Major</option>
+                                <option>G Major</option>
+                                <option>A Major</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label>Your layers</label>
+                        <div class="input-grid">
+                            <div>
+                                <input type="number" id="your-drums" placeholder="Drums">
+                            </div>
+                            <div>
+                                <input type="number" id="your-bass" placeholder="Bass">
+                            </div>
+                        </div>
+                        <div class="input-grid">
+                            <div>
+                                <input type="number" id="your-melodic" placeholder="Melodic">
+                            </div>
+                            <div>
+                                <input type="number" id="your-fx" placeholder="FX">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="compareToReference()">📊 Show the Gap</button>
+                    <div id="comparison-output"></div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <div class="tip-title">🔮 COMING SOON: Automatic Analysis</div>
+                <div class="tip-text">
+                    Upload an MP3/WAV file and get automatic BPM detection, key detection, waveform visualization, section detection (intro/build/drop), energy curve analysis, and frequency breakdown. We're building this now!
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="decision-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal()">×</div>
+            <div class="modal-icon" id="modal-icon">🎲</div>
+            <div class="modal-title" id="modal-title">Your Next Move</div>
+            <div class="modal-message" id="modal-message"></div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Not This</button>
+                <button class="modal-btn modal-btn-primary" onclick="executeDecision()">LET'S GO →</button>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -1075,48 +1383,80 @@
 
     <script>
         // ============================================
-        // JUST DECIDE FOR ME
+        // JUST DECIDE FOR ME - Custom Modal
         // ============================================
+        let currentDecision = null;
+
         function justDecideForMe() {
-            console.log('Button clicked!');
-            
             const decisions = [
                 {
                     action: 'boring',
-                    message: '💡 ADD MOVEMENT\n\nYour next move: Automate the filter on your main element.\n\nStart at 500Hz, sweep to 2kHz over 8 bars.\n\nDo it now. 5 minutes max.'
+                    icon: '💡',
+                    title: 'ADD MOVEMENT',
+                    message: 'Your next move: Automate the filter on your main element.\n\nStart at 500Hz, sweep to 2kHz over 8 bars.\n\n⏱️ 5 minutes. Do it now.'
                 },
                 {
                     action: 'melodic',
-                    message: '🎹 GENERATE A MELODY\n\nYour track needs a melodic hook.\n\nI\'m taking you to the melody generator.\n\nPick your key, generate, and add it to your track.\n\n15 minutes. Go.'
+                    icon: '🎹',
+                    title: 'GENERATE A MELODY',
+                    message: 'Your track needs a melodic hook.\n\nI\'m taking you to the melody generator.\n\nPick your key, generate, and add it to your track.\n\n⏱️ 15 minutes. Go.'
                 },
                 {
                     action: 'loop',
-                    message: '🔓 BREAK THE LOOP\n\nStop perfecting. Start arranging.\n\nNext 20 minutes:\n1. Bounce your loop as audio\n2. Copy it 10 times\n3. Remove elements for intro\n4. Full loop = drop\n\nTimer starts NOW.'
+                    icon: '🔓',
+                    title: 'BREAK THE LOOP',
+                    message: 'Stop perfecting. Start arranging.\n\nNext 20 minutes:\n• Bounce your loop as audio\n• Copy it 10 times\n• Remove elements for intro\n• Full loop = drop\n\n⏱️ Timer starts NOW.'
                 },
                 {
                     action: 'transition',
-                    message: '🔄 ADD A TRANSITION\n\nYour next move: White noise riser over 8 bars.\n\nAdd it before your next section.\n\nHigh-pass filter sweep too if you want.\n\n10 minutes.'
+                    icon: '🔄',
+                    title: 'ADD A TRANSITION',
+                    message: 'Your next move: White noise riser over 8 bars.\n\nAdd it before your next section.\n\nHigh-pass filter sweep too if you want.\n\n⏱️ 10 minutes.'
                 },
                 {
                     action: 'earcandy',
-                    message: '🍬 ADD EAR CANDY\n\nYour next move: Reverse hi-hat.\n\nPlace it 1 beat before your next downbeat.\n\nSmall detail, big impact.\n\n5 minutes. Do it.'
+                    icon: '🍬',
+                    title: 'ADD EAR CANDY',
+                    message: 'Your next move: Reverse hi-hat.\n\nPlace it 1 beat before your next downbeat.\n\nSmall detail, big impact.\n\n⏱️ 5 minutes. Do it.'
+                },
+                {
+                    action: 'arrangement',
+                    icon: '📐',
+                    title: 'GET STRUCTURE',
+                    message: 'Your loop needs arrangement.\n\nI\'m taking you to the arrangement builder.\n\nPick a style and follow the sections.\n\n⏱️ 30 minutes. Build it.'
                 }
             ];
             
-            const decision = decisions[Math.floor(Math.random() * decisions.length)];
+            currentDecision = decisions[Math.floor(Math.random() * decisions.length)];
             
-            alert(decision.message + '\n\nNavigating to the tool...');
+            document.getElementById('modal-icon').textContent = currentDecision.icon;
+            document.getElementById('modal-title').textContent = currentDecision.title;
+            document.getElementById('modal-message').textContent = currentDecision.message;
+            document.getElementById('decision-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('decision-modal').classList.remove('active');
+            currentDecision = null;
+        }
+
+        function executeDecision() {
+            if (!currentDecision) return;
             
-            if (decision.action === 'melodic') {
+            closeModal();
+            
+            if (currentDecision.action === 'melodic') {
                 showSolution('melodic');
-            } else if (decision.action === 'loop') {
+            } else if (currentDecision.action === 'loop') {
                 showSolution('loop');
-            } else if (decision.action === 'transition') {
+            } else if (currentDecision.action === 'transition') {
                 showSolution('transition');
-            } else if (decision.action === 'boring') {
+            } else if (currentDecision.action === 'arrangement') {
+                showSolution('arrangement');
+            } else if (currentDecision.action === 'boring') {
                 showSolution('boring');
                 setTimeout(() => generateTechnique('random'), 500);
-            } else if (decision.action === 'earcandy') {
+            } else if (currentDecision.action === 'earcandy') {
                 showSolution('boring');
                 setTimeout(() => generateTechnique('earcandy'), 500);
             }
@@ -1459,10 +1799,17 @@
                 key: 'G# Minor',
                 desc: 'Deep, rolling basslines with minimal melodic content. Focus on groove and atmosphere.',
                 elements: [
-                    '<strong>Kick:</strong> 4/4 pattern, punchy but not too bright. Use a sub-heavy kick.',
-                    '<strong>Bass:</strong> Root note (G#) on beat 1, 5th (D#) on beat 3. Hold for 2 beats each. Add subtle filter movement.',
-                    '<strong>Hi-Hat:</strong> Closed hi-hats on offbeats (8th notes). Keep it tight and minimal.'
-                ]
+                    '<strong>1. Kick:</strong> 4/4 pattern, punchy but not too bright. Use a sub-heavy kick around 40-50Hz. Place on every beat.',
+                    '<strong>2. Bass:</strong> Root note (G#) on beat 1, 5th (D#) on beat 3. Hold for 2 beats each. Add subtle filter movement (LFO at 1/8 rate).',
+                    '<strong>3. Hi-Hat (Closed):</strong> 16th notes on offbeats. Keep it tight and minimal. Pan slightly right (+15%). Volume: -18dB.',
+                    '<strong>4. Hi-Hat (Open):</strong> On beat 2 and 4. Short decay (200ms). Pan slightly left (-15%). Creates space.',
+                    '<strong>5. Shaker:</strong> Constant 16th notes. Very quiet (-24dB). Panned hard right. Fills the groove.',
+                    '<strong>6. Atmosphere Pad:</strong> G# minor chord (G# - B - D#). Long attack (1s), long release (3s). Lots of reverb. This is the vibe.',
+                    '<strong>7. Sub Bass:</strong> Same as main bass but one octave lower. Pure sine wave. Barely audible but you feel it.',
+                    '<strong>8. Texture:</strong> Vinyl crackle or field recording loop. Very quiet (-30dB). Adds warmth and analog feel.'
+                ],
+                arrangement: 'Start with kick + bass for 16 bars. Add hi-hats at bar 17. Pad enters at bar 33. Build gradually - don\'t rush.',
+                references: ['Maccabi - Drums & Bass', 'Kobosil - 44 Rush', 'ANNA - Hidden Beauties']
             },
             groovy: {
                 vibe: '🕺 Groovy & Funky',
@@ -1718,6 +2065,388 @@
             document.getElementById('arrangement-sections').innerHTML = sectionsHTML;
             document.getElementById('arrangement-output').style.display = 'block';
             document.getElementById('arrangement-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ============================================
+        // DEEP REFERENCE TRACK ANALYZER
+        // ============================================
+        function analyzeReferenceDeep() {
+            const bpm = parseInt(document.getElementById('ref-bpm-blank').value);
+            const key = document.getElementById('ref-key-blank').value;
+            const length = parseFloat(document.getElementById('ref-length').value);
+            const vibe = document.getElementById('ref-vibe').value;
+            
+            if (!bpm || !length) {
+                alert('⚠️ Enter at least BPM and track length!');
+                return;
+            }
+            
+            // Calculate bars
+            const bars = Math.round((length * 60 * bpm) / 4);
+            
+            // Tempo analysis
+            let tempoCategory = '';
+            let tempoAdvice = '';
+            if (bpm < 120) {
+                tempoCategory = 'Deep House / Slow Groover';
+                tempoAdvice = 'This tempo is hypnotic and groove-focused. Build slowly, let elements breathe. Focus on bass and rhythm.';
+            } else if (bpm >= 120 && bpm < 125) {
+                tempoCategory = 'Classic House';
+                tempoAdvice = 'Perfect for melodic elements and vocals. Standard house tempo - great for learning arrangements.';
+            } else if (bpm >= 125 && bpm < 128) {
+                tempoCategory = 'Peak-Time / Tech House';
+                tempoAdvice = 'High energy. Driving basslines work best. Keep it punchy and minimal - less is more at this tempo.';
+            } else {
+                tempoCategory = 'Fast Tech House';
+                tempoAdvice = 'Festival energy. Strip back melodic elements - focus on percussion and groove. Energy over complexity.';
+            }
+            
+            // Key analysis
+            let keyAdvice = key ? `${key} suggests a ${key.includes('Minor') ? 'darker, emotional' : 'brighter, uplifting'} vibe. Use this key in your track for similar mood.` : 'Key unknown - focus on the groove and rhythm first.';
+            
+            // Estimated arrangement based on length
+            let suggestedStructure = '';
+            if (length < 5) {
+                suggestedStructure = `
+                    <strong>SHORT FORMAT (Radio/Streaming)</strong><br>
+                    • Intro: 16 bars<br>
+                    • Build: 16 bars<br>
+                    • Drop: 32 bars<br>
+                    • Breakdown: 16 bars<br>
+                    • Final Drop: 16 bars<br>
+                    • Outro: 16 bars
+                `;
+            } else if (length >= 5 && length < 7) {
+                suggestedStructure = `
+                    <strong>CLUB FORMAT (DJ-Friendly)</strong><br>
+                    • Intro: 32 bars<br>
+                    • Build: 32 bars<br>
+                    • Main Section: 64 bars<br>
+                    • Breakdown: 32 bars<br>
+                    • Second Drop: 32 bars<br>
+                    • Outro: 32 bars
+                `;
+            } else {
+                suggestedStructure = `
+                    <strong>EXTENDED FORMAT (Underground/Progressive)</strong><br>
+                    • Long Intro: 48 bars<br>
+                    • Groove Build: 48 bars<br>
+                    • Main Section: 80 bars<br>
+                    • Breakdown: 48 bars<br>
+                    • Second Section: 64 bars<br>
+                    • Long Outro: 48 bars
+                `;
+            }
+            
+            // Element suggestions based on vibe
+            let elementSuggestions = '';
+            if (vibe.includes('Dark')) {
+                elementSuggestions = 'Focus on: Sub bass, minimal melodic elements, rolling percussion. Keep it hypnotic.';
+            } else if (vibe.includes('Groovy')) {
+                elementSuggestions = 'Focus on: Syncopated bass, funky percussion, vocal samples. Make it danceable.';
+            } else if (vibe.includes('Energetic')) {
+                elementSuggestions = 'Focus on: Driving kick, big bassline, layered claps. Peak-time energy.';
+            } else if (vibe.includes('Dreamy')) {
+                elementSuggestions = 'Focus on: Pads, atmospheric elements, gentle melodies. Create space.';
+            } else {
+                elementSuggestions = 'Focus on: Kick, bass, minimal melodic hook, subtle percussion.';
+            }
+            
+            const output = `
+                <div class="result-box" style="margin-top: 24px;">
+                    <div class="result-category">REFERENCE ANALYSIS</div>
+                    <div class="result-main">${bpm} BPM | ${length} min | ~${bars} bars</div>
+                </div>
+                
+                <div style="background: var(--bg-medium); padding: 20px; border-radius: 12px; margin-top: 16px;">
+                    <div style="font-size: 14px; color: var(--text-primary); line-height: 1.8;">
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: var(--primary);">Tempo Category:</strong> ${tempoCategory}<br>
+                            <span style="color: var(--text-secondary);">${tempoAdvice}</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: var(--primary);">Key Analysis:</strong><br>
+                            <span style="color: var(--text-secondary);">${keyAdvice}</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: var(--primary);">Suggested Structure:</strong><br>
+                            <span style="color: var(--text-secondary);">${suggestedStructure}</span>
+                        </div>
+                        
+                        <div>
+                            <strong style="color: var(--primary);">Element Focus:</strong><br>
+                            <span style="color: var(--text-secondary);">${elementSuggestions}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tip-box" style="margin-top: 16px;">
+                    <div class="tip-title">🎯 NEXT STEPS</div>
+                    <div class="tip-text">
+                        1. Use ${bpm} BPM ${key ? 'in ' + key : ''} for your track<br>
+                        2. Follow the suggested structure above<br>
+                        3. Listen to your reference and count how many elements it has<br>
+                        4. Match the vibe, not the sounds
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reference-output-blank').innerHTML = output;
+        }
+
+        // ============================================
+        // FULL REFERENCE ANALYZER (Dedicated Page)
+        // ============================================
+        function analyzeReferenceFull() {
+            const bpm = parseInt(document.getElementById('ref-analyzer-bpm').value);
+            const length = parseFloat(document.getElementById('ref-analyzer-length').value);
+            const key = document.getElementById('ref-analyzer-key').value;
+            const vibe = document.getElementById('ref-analyzer-vibe').value;
+            
+            const refDrums = parseInt(document.getElementById('ref-drums').value) || 0;
+            const refBass = parseInt(document.getElementById('ref-bass').value) || 0;
+            const refMelodic = parseInt(document.getElementById('ref-melodic').value) || 0;
+            const refFx = parseInt(document.getElementById('ref-fx').value) || 0;
+            
+            if (!bpm || !length) {
+                alert('⚠️ Enter at least BPM and track length!');
+                return;
+            }
+            
+            // Calculate bars
+            const bars = Math.round((length * 60 * bpm) / 4);
+            
+            // Tempo analysis
+            let tempoCategory, tempoAdvice;
+            if (bpm < 120) {
+                tempoCategory = 'Deep House / Slow Groover';
+                tempoAdvice = 'This tempo is hypnotic and groove-focused. Build slowly, let elements breathe. Focus on bass and rhythm over melody.';
+            } else if (bpm >= 120 && bpm < 125) {
+                tempoCategory = 'Classic House';
+                tempoAdvice = 'Perfect for melodic elements and vocals. Standard house tempo - great for learning arrangements. Balanced energy.';
+            } else if (bpm >= 125 && bpm < 128) {
+                tempoCategory = 'Peak-Time / Tech House';
+                tempoAdvice = 'High energy. Driving basslines work best. Keep it punchy and minimal - less is more at this tempo.';
+            } else {
+                tempoCategory = 'Fast Tech House / Techno';
+                tempoAdvice = 'Festival energy. Strip back melodic elements - focus on percussion and groove. Energy over complexity.';
+            }
+            
+            // Key mood
+            let keyMood = key ? (key.includes('Minor') ? 'darker, emotional, introspective' : 'brighter, uplifting, euphoric') : 'unknown';
+            
+            // Structure suggestion
+            let structure;
+            if (length < 5) {
+                structure = `
+                    <strong>SHORT FORMAT (Radio/Streaming)</strong><br>
+                    • Intro: 0:00-0:30 (16 bars)<br>
+                    • Build: 0:30-1:00 (16 bars)<br>
+                    • Drop: 1:00-2:00 (32 bars)<br>
+                    • Breakdown: 2:00-2:30 (16 bars)<br>
+                    • Final Drop: 2:30-3:30 (32 bars)<br>
+                    • Outro: 3:30-4:00 (16 bars)
+                `;
+            } else if (length >= 5 && length < 7) {
+                structure = `
+                    <strong>CLUB FORMAT (DJ-Friendly)</strong><br>
+                    • Intro: 0:00-1:00 (32 bars)<br>
+                    • Build: 1:00-2:00 (32 bars)<br>
+                    • Main Section: 2:00-4:00 (64 bars)<br>
+                    • Breakdown: 4:00-5:00 (32 bars)<br>
+                    • Second Drop: 5:00-6:00 (32 bars)<br>
+                    • Outro: 6:00-7:00 (32 bars)
+                `;
+            } else {
+                structure = `
+                    <strong>EXTENDED FORMAT (Underground)</strong><br>
+                    • Long Intro: 0:00-1:30 (48 bars)<br>
+                    • Groove Build: 1:30-3:00 (48 bars)<br>
+                    • Main Section: 3:00-5:30 (80 bars)<br>
+                    • Breakdown: 5:30-7:00 (48 bars)<br>
+                    • Second Section: 7:00-9:00 (64 bars)<br>
+                    • Long Outro: 9:00-10:30 (48 bars)
+                `;
+            }
+            
+            // Element analysis
+            let elementAdvice = '';
+            const totalLayers = refDrums + refBass + refMelodic + refFx;
+            if (totalLayers > 0) {
+                elementAdvice = `
+                    <div style="margin-top: 16px; padding: 16px; background: var(--bg-dark); border-radius: 8px;">
+                        <strong style="color: var(--primary);">Element Breakdown:</strong><br>
+                        <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 14px;">
+                            <div>🥁 Drums: ${refDrums} layers</div>
+                            <div>🎸 Bass: ${refBass} layers</div>
+                            <div>🎹 Melodic: ${refMelodic} layers</div>
+                            <div>✨ FX/Atmos: ${refFx} layers</div>
+                        </div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 13px;">
+                            <strong>Total: ${totalLayers} layers</strong> - ${totalLayers < 10 ? 'Minimal and focused ✓' : totalLayers < 15 ? 'Healthy complexity ✓' : 'Dense mix ⚠️'}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const output = `
+                <div class="result-box" style="margin-top: 24px;">
+                    <div class="result-category">REFERENCE ANALYSIS</div>
+                    <div class="result-main">${bpm} BPM ${key ? '| ' + key : ''} | ${length} min</div>
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">Approximately ${bars} bars total</div>
+                </div>
+                
+                <div class="card">
+                    <div style="font-size: 14px; line-height: 1.8;">
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                            <strong style="color: var(--primary); font-size: 16px;">🎵 Tempo</strong><br>
+                            <div style="margin-top: 8px; color: var(--text-primary);">${tempoCategory}</div>
+                            <div style="margin-top: 4px; color: var(--text-secondary); font-size: 13px;">${tempoAdvice}</div>
+                        </div>
+                        
+                        ${key ? `
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                            <strong style="color: var(--primary); font-size: 16px;">🎹 Key & Mood</strong><br>
+                            <div style="margin-top: 8px; color: var(--text-primary);">${key} - ${keyMood} vibe</div>
+                            <div style="margin-top: 4px; color: var(--text-secondary); font-size: 13px;">Use this key in your track for similar emotional impact.</div>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
+                            <strong style="color: var(--primary); font-size: 16px;">📐 Suggested Structure</strong><br>
+                            <div style="margin-top: 12px; color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                ${structure}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <strong style="color: var(--primary); font-size: 16px;">🎨 Vibe Focus: ${vibe}</strong><br>
+                            <div style="margin-top: 8px; color: var(--text-secondary); font-size: 13px;">
+                                ${getVibeAdvice(vibe)}
+                            </div>
+                        </div>
+                        
+                        ${elementAdvice}
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <div class="tip-title">🎯 NEXT STEPS</div>
+                    <div class="tip-text">
+                        1. Set your project to ${bpm} BPM${key ? ' in ' + key : ''}<br>
+                        2. Create markers in your DAW following the structure above<br>
+                        3. ${totalLayers > 0 ? 'Aim for similar element count: ' + totalLayers + ' layers' : 'Listen and count layers in the reference'}<br>
+                        4. Match the VIBE, not the sounds
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('ref-analysis-output').innerHTML = output;
+            document.getElementById('ref-comparison-section').style.display = 'block';
+            document.getElementById('ref-analysis-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function getVibeAdvice(vibe) {
+            const advice = {
+                'Dark & Hypnotic': 'Focus on: Sub bass, minimal melodic elements, rolling percussion, filter automation. Keep it hypnotic and deep.',
+                'Groovy & Funky': 'Focus on: Syncopated bass, funky percussion, vocal samples, swing feel. Make it danceable and bouncy.',
+                'Energetic & Peak-Time': 'Focus on: Driving kick, powerful bassline, layered claps, big risers. Maximum energy.',
+                'Dreamy & Atmospheric': 'Focus on: Lush pads, gentle melodies, reverb, soft percussion. Create space and emotion.',
+                'Minimal & Tech': 'Focus on: Clean kick, tight bass, sparse percussion, subtle movement. Less is more.',
+                'Vocal & Melodic': 'Focus on: Strong vocal hook, clear melody, supporting chords, balanced arrangement. Radio-ready.'
+            };
+            return advice[vibe] || 'Listen closely to understand the core elements that define this vibe.';
+        }
+
+        function compareToReference() {
+            const yourBPM = parseInt(document.getElementById('your-bpm').value);
+            const yourKey = document.getElementById('your-key').value;
+            const yourDrums = parseInt(document.getElementById('your-drums').value) || 0;
+            const yourBass = parseInt(document.getElementById('your-bass').value) || 0;
+            const yourMelodic = parseInt(document.getElementById('your-melodic').value) || 0;
+            const yourFx = parseInt(document.getElementById('your-fx').value) || 0;
+            
+            const refBPM = parseInt(document.getElementById('ref-analyzer-bpm').value);
+            const refKey = document.getElementById('ref-analyzer-key').value;
+            const refDrums = parseInt(document.getElementById('ref-drums').value) || 0;
+            const refBass = parseInt(document.getElementById('ref-bass').value) || 0;
+            const refMelodic = parseInt(document.getElementById('ref-melodic').value) || 0;
+            const refFx = parseInt(document.getElementById('ref-fx').value) || 0;
+            
+            let gaps = [];
+            
+            // BPM comparison
+            if (yourBPM && Math.abs(yourBPM - refBPM) > 3) {
+                gaps.push(`<strong>⚠️ BPM Mismatch:</strong> You're at ${yourBPM}, reference is ${refBPM}. ${yourBPM < refBPM ? 'Speed up' : 'Slow down'} by ${Math.abs(yourBPM - refBPM)} BPM.`);
+            } else if (yourBPM) {
+                gaps.push(`<strong>✓ BPM Match:</strong> You're in the same tempo range.`);
+            }
+            
+            // Key comparison
+            if (yourKey && refKey && yourKey !== refKey) {
+                gaps.push(`<strong>🎹 Different Key:</strong> You're in ${yourKey}, reference is ${refKey}. Consider matching for similar vibe.`);
+            } else if (yourKey && refKey) {
+                gaps.push(`<strong>✓ Key Match:</strong> Same key = same emotional impact.`);
+            }
+            
+            // Element comparison
+            const yourTotal = yourDrums + yourBass + yourMelodic + yourFx;
+            const refTotal = refDrums + refBass + refMelodic + refFx;
+            
+            if (refTotal > 0) {
+                const drumDiff = yourDrums - refDrums;
+                const bassDiff = yourBass - refBass;
+                const melodicDiff = yourMelodic - refMelodic;
+                const fxDiff = yourFx - refFx;
+                
+                if (drumDiff > 2) gaps.push(`<strong>⚠️ Too Many Drums:</strong> You have ${yourDrums}, reference has ${refDrums}. Remove ${drumDiff} drum layers.`);
+                if (drumDiff < -2) gaps.push(`<strong>🥁 Add Drums:</strong> You have ${yourDrums}, reference has ${refDrums}. Add ${Math.abs(drumDiff)} more drum layers.`);
+                
+                if (bassDiff > 1) gaps.push(`<strong>⚠️ Too Much Bass:</strong> You have ${yourBass}, reference has ${refBass}. Simplify bass.`);
+                if (bassDiff < -1) gaps.push(`<strong>🎸 Add Bass:</strong> You need ${Math.abs(bassDiff)} more bass layer(s).`);
+                
+                if (melodicDiff > 3) gaps.push(`<strong>⚠️ Too Many Melodic Elements:</strong> You have ${yourMelodic}, reference has ${refMelodic}. Remove ${melodicDiff} melodic layers.`);
+                if (melodicDiff < -3) gaps.push(`<strong>🎹 Add Melody:</strong> You need ${Math.abs(melodicDiff)} more melodic elements.`);
+                
+                if (Math.abs(yourTotal - refTotal) > 5) {
+                    gaps.push(`<strong>📊 Overall Density:</strong> You have ${yourTotal} total layers, reference has ${refTotal}. ${yourTotal > refTotal ? 'Simplify' : 'Add more layers'}.`);
+                }
+            }
+            
+            if (gaps.length === 0) {
+                gaps.push('<strong>✓ You\'re on track!</strong> Your track matches the reference well.');
+            }
+            
+            const output = `
+                <div class="result-box" style="margin-top: 24px;">
+                    <div class="result-category">THE GAP</div>
+                    <div class="result-main">Your Track vs Reference</div>
+                </div>
+                
+                <div class="card" style="background: rgba(102, 126, 234, 0.05);">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        ${gaps.map(gap => `<li style="padding: 12px; margin-bottom: 8px; background: var(--bg-medium); border-radius: 8px; font-size: 14px; line-height: 1.7;">${gap}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="card" style="background: rgba(67, 233, 123, 0.05); border-color: var(--success);">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success); margin-bottom: 12px;">
+                            Ready to close the gap?
+                        </div>
+                        <div style="font-size: 15px; color: var(--text-primary); line-height: 1.8;">
+                            Stop analyzing. Open Ableton.<br>
+                            Make the changes above.<br>
+                            20 minutes. Go.
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('comparison-output').innerHTML = output;
+            document.getElementById('comparison-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     </script>
 </body>
